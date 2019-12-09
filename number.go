@@ -29,45 +29,15 @@ func calcFactor(n *big.Int) *big.Int {
 	a := big.NewInt(1)
 	b := big.NewInt(1)
 	result := big.NewInt(1)
-	zero := big.NewInt(0)
 	one := big.NewInt(1)
-	twe := big.NewInt(2)
-	three := big.NewInt(3)
-	five := big.NewInt(5)
-	thrteen := big.NewInt(13)
-	module := big.NewInt(0)
+	numbers := []*big.Int{big.NewInt(2), big.NewInt(3), big.NewInt(5), big.NewInt(7), big.NewInt(11), big.NewInt(13)}
 
-	// 2対策
-	n.DivMod(n, twe, module)
-	if module.Cmp(zero) == 0 {
-		n.Mul(n, twe)
-		return twe
+	// 小さい値が素因数だとたまにエラーが起こるので対策
+	for _, number := range numbers {
+		if isModZero(n, number) {
+			return number
+		}
 	}
-	n.Mul(n, twe).Add(n, module)
-
-	// 3対策
-	n.DivMod(n, three, module)
-	if module.Cmp(zero) == 0 {
-		n.Mul(n, three)
-		return three
-	}
-	n.Mul(n, three).Add(n, module)
-
-	// 5対策
-	n.DivMod(n, five, module)
-	if module.Cmp(zero) == 0 {
-		n.Mul(n, five)
-		return five
-	}
-	n.Mul(n, five).Add(n, module)
-
-	// 13対策
-	n.DivMod(n, thrteen, module)
-	if module.Cmp(zero) == 0 {
-		n.Mul(n, thrteen)
-		return thrteen
-	}
-	n.Mul(n, thrteen).Add(n, module)
 
 	for {
 		z1.Mul(z1, z1)
@@ -87,4 +57,17 @@ func calcFactor(n *big.Int) *big.Int {
 	}
 
 	return result
+}
+
+// isModZero 余りがゼロかどうかを判定
+func isModZero(n, m *big.Int) bool {
+	zero := big.NewInt(0)
+	module := big.NewInt(0)
+	n.DivMod(n, m, module)
+	if module.Cmp(zero) == 0 {
+		n.Mul(n, m)
+		return true
+	}
+	n.Mul(n, m).Add(n, module)
+	return false
 }
