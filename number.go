@@ -26,8 +26,6 @@ func calcFactor(n *big.Int) *big.Int {
 	z1 := big.NewInt(2)
 	z2 := big.NewInt(2)
 	z2_z1 := big.NewInt(0)
-	a := big.NewInt(1)
-	b := big.NewInt(1)
 	result := big.NewInt(1)
 	one := big.NewInt(1)
 	numbers := []*big.Int{big.NewInt(2), big.NewInt(3), big.NewInt(5), big.NewInt(7), big.NewInt(11), big.NewInt(13)}
@@ -40,17 +38,11 @@ func calcFactor(n *big.Int) *big.Int {
 	}
 
 	for {
-		z1.Mul(z1, z1)
-		z1.Add(z1, one)
-		z1.Mod(z1, n)
-		z2.Mul(z2, z2)
-		z2.Add(z2, one)
-		z2.Mod(z2, n)
-		z2.Mul(z2, z2)
-		z2.Add(z2, one)
-		z2.Mod(z2, n)
+		z1.Mul(z1, z1).Add(z1, one).Mod(z1, n)
+		z2.Mul(z2, z2).Add(z2, one).Mod(z2, n)
+		z2.Mul(z2, z2).Add(z2, one).Mod(z2, n)
 
-		result.GCD(a, b, z2_z1.Sub(z2, z1).Abs(z2_z1), n)
+		result.GCD(nil, nil, z2_z1.Sub(z2, z1).Abs(z2_z1), n)
 		if result.Cmp(one) != 0 {
 			break
 		}
