@@ -28,7 +28,7 @@ func main() {
 			}
 
 			// プレイヤーBのターン
-			cards_shuffled, target, point_get = simple_draw(cards_shuffled, target)
+			cards_shuffled, target, point_get = smart_draw(cards_shuffled, target)
 			point_b += point_get
 			if target == len(cards_shuffled) {
 				break
@@ -115,6 +115,82 @@ func simple_draw(cards []int, target int) ([]int, int, int) {
 				target += 2
 			} else {
 				target += 2
+				break
+			}
+		}
+
+		if target == len(cards) {
+			break
+		}
+	}
+
+	return cards, target, point
+}
+
+// smart_draw 賢いドロー方法。ヒントをなるべく増やさない。
+// 戻り値: 処理済みカード配列、めくられていないカード位置、ゲットしたカード枚数
+func smart_draw(cards []int, target int) ([]int, int, int) {
+	point := 0
+	if target == 0 {
+		// まだ1枚もめくられていない場合
+		target += 2
+		if cards[0] == cards[1] {
+			cards[0] = 0
+			cards[1] = 0
+			point += 2
+		} else {
+			return cards, target, point
+		}
+	}
+
+	// すでにめくられているカードでペアができているか確認
+	before_target := target - 1
+	before_target_num := cards[before_target]
+	if before_target_num != 0 {
+		for i := 0; i < before_target; i++ {
+			if cards[i] == before_target_num {
+				cards[i] = 0
+				cards[before_target] = 0
+				point += 2
+				break
+			}
+		}
+	}
+
+	// 未知のカードをめくる場合（通常）
+	for {
+		target_num := cards[target]
+		already_exist := false
+		exist_cards_count := 0
+		for i := 0; i < target; i++ {
+			if cards[i] == target_num {
+				cards[i] = 0
+				cards[target] = 0
+				point += 2
+				target += 1
+				already_exist = true
+				break
+			}
+			if cards[i] != 0 {
+				exist_cards_count++
+			}
+		}
+
+		// すでにめくられているカードの中に、今めくったカードとのペアがなかった場合
+		if !already_exist {
+			// すでにめくられたカードがない、または全てのペアが分かってしまっている場合、新規カードをめくる
+			if exist_cards_count == 0 || len(cards)-target == exist_cards_count+2 {
+				if cards[target] == cards[target+1] {
+					cards[target] = 0
+					cards[target+1] = 0
+					point += 2
+					target += 2
+				} else {
+					target += 2
+					break
+				}
+			} else {
+				target++
 				break
 			}
 		}
