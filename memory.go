@@ -8,9 +8,12 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	cards := []int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10}
+	win_a := 0
+	win_b := 0
+	draw := 0
 
-	for i := 0; i < 1; i++ {
+	for i := 0; i < 10000; i++ {
+		cards := []int{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10}
 		cards_shuffled := shuffle(cards)
 		target := 0 // めくられていないカードの最初の位置を表す。
 		point_a := 0
@@ -19,8 +22,6 @@ func main() {
 		for {
 			// プレイヤーAのターン
 			cards_shuffled, target, point_get = simple_draw(cards_shuffled, target)
-			fmt.Printf("target: %d\n", target)
-			fmt.Printf("A結果: %v\n", cards_shuffled)
 			point_a += point_get
 			if target == len(cards_shuffled) {
 				break
@@ -28,17 +29,24 @@ func main() {
 
 			// プレイヤーBのターン
 			cards_shuffled, target, point_get = simple_draw(cards_shuffled, target)
-			fmt.Printf("target: %d\n", target)
-			fmt.Printf("B結果: %v\n", cards_shuffled)
 			point_b += point_get
 			if target == len(cards_shuffled) {
 				break
 			}
 		}
 
-		fmt.Printf("A点数: %d\n", point_a)
-		fmt.Printf("B点数: %d\n", point_b)
+		if point_a > point_b {
+			win_a++
+		} else if point_a < point_b {
+			win_b++
+		} else {
+			draw++
+		}
 	}
+
+	fmt.Printf("A勝利: %d\n", win_a)
+	fmt.Printf("B勝利: %d\n", win_b)
+	fmt.Printf("引き分け: %d\n", draw)
 }
 
 // shuffle 与えられた配列をシャッフルして返す
